@@ -1,0 +1,126 @@
+{
+  "name": "SymptomChecker",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "SymptomChecker",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        48
+      ],
+      "id": "18cd7bba-88e2-49c8-a140-53cc152c02f6",
+      "name": "Webhook",
+      "webhookId": "1114fbe0-b697-4fd8-88ae-6bdc6685bf75"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        608,
+        48
+      ],
+      "id": "f8c2fab6-a543-446f-9934-b532f23a65bd",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message || $json.message || $json.query }}\n",
+        "options": {
+          "systemMessage": "=You are a medical assistant AI. Analyze the user's symptoms and produce a well-structured response in the exact format below.\n\nThe response MUST be short and crisp (around 3 to 4 sentences) with no additional text, no preamble, and no explanations.\n\nUse this structure:\n\"Likely quadriceps muscle strain or overuse injury. Rest the leg, avoid activities that worsen the pain, and apply gentle ice for short intervals. Light stretching can help if the pain is mild. Reduce physical activity involving the affected leg for 24–72 hours, Apply ice for 10–15 minutes at a time, up to 3 times daily, Do gentle quadriceps stretches if tolerated. Monitor for swelling, bruising, or persistent weakness\"\n\n\nRules:\n- Keep the diagnosis short and non-alarming.\n- Advice must be practical, safe, and easy to follow.\n- Recommendations must be actionable steps, written as a list.\n- Confidence should be a float between 0.0 and 1.0.\n- followUp must be a clear instruction on when to consult a doctor.\n- DO NOT mention that you are an AI model.\n- DO NOT make definitive medical claims or diagnoses—keep language tentative (e.g., “likely”, “may indicate”, “possible”). \n\nNow analyze the following input:\n\nSymptoms: {{$json[\"symptoms\"]}}\nDuration: {{$json[\"duration\"]}}\nSeverity: {{$json[\"severity\"]}}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        256,
+        48
+      ],
+      "id": "227f470d-04a3-4b21-b7a2-13499e8a657e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        256,
+        256
+      ],
+      "id": "d079933a-dbac-481b-848b-81b066862be8",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "FjtwHuHK2kQugkJ5",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ae645359-6ca5-4d7c-9ad4-648aaa1a6e45",
+  "meta": {
+    "instanceId": "5af2d2d0f9e1e045bfceb8a032d31e1f44778ba58a27c4fdf45256740b955a9c"
+  },
+  "id": "VvysBMuPjIOpu3Kh",
+  "tags": []
+}
