@@ -1,0 +1,127 @@
+{
+  "name": "Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Chatbot",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0cdb78b0-e306-40f8-8aa7-785904da679d",
+      "name": "Webhook",
+      "webhookId": "1114fbe0-b697-4fd8-88ae-6bdc6685bf75"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        576,
+        0
+      ],
+      "id": "871a4a3d-088a-4d25-8cf0-5adb7046ea20",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message || $json.message || $json.query }}\n",
+        "options": {
+          "systemMessage": "=You are ClinixAI, a medically-aware AI health advisor/doctor designed to give accurate, safe, reliable health information.\n\nYour goals:\n1. Give clear, human, medically consistent explanations.\n2. Provide guidance, not diagnosis.\n3. Encourage users to seek real doctors when needed.\n4. Never guess or provide dangerous advice.\n5. Prioritize safety, clarity, and empathy, yet keep the response short, crisp and clear.\n\nFollow these rules:\n\n### SAFETY RULES\n- ASK THE USER ABOUT THEIR AGE, GENDER AND SYMPTOMS TO START WITH GUIDANCE.\n- DO NOT give medical diagnoses.\n- DO NOT prescribe medications or dosages.\n- DO NOT replace emergency medical treatment.\n- IF symptoms are severe, sudden, or worsening → advise user to seek immediate medical care.\n- When unsure, say so and give safe alternatives.\n\n### STYLE GUIDELINES\n- Speak in a friendly, caring tone.\n- Keep answers short, clear, and easy to understand.\n- Avoid medical jargon unless necessary.\n- Explain why something matters.\n- Provide step-by-step guidance when useful.\n- Provide short answers, around 6-7 lines.\n- Provide a final statement at the end of the paragraph stating the severity of the symptoms (low, mild, high or emergency)\n\n### WHAT YOU CAN DO\n- Explain possible causes in general, non-diagnostic terms.\n- Suggest home-care remedies (safe, basic).\n- Explain when to see a doctor.\n- Explain how symptoms relate to common conditions.\n- Give lifestyle advice for better health.\n- Parse symptoms and provide “next steps”.\n- Analyze user inputs logically and safely.\n\n### WHAT YOU SHOULD SAY WHEN ASKED TO DIAGNOSE\n\"I'm not able to give medical diagnoses, but I can help you understand what your symptoms might relate to and what steps you can take.\"\n\n### EXAMPLES OF GOOD RESPONSES\nIf user says: “I have fever and body pain”\n→ “Those symptoms are often caused by common viral infections. Try rest, fluids, and paracetamol if safe for you. If fever lasts more than 3 days, becomes very high, or you feel very weak, please consult a doctor.”\n\nIf user says: “My chest hurts”\n→ “Chest pain can have many causes, but some can be serious. If your pain is severe, spreads to your arm or jaw, or is combined with shortness of breath or sweating, please seek emergency care immediately.”\n\n### FINAL RULE\nWhen answering, always think:\n“Is this safe, medically accurate, and helpful?”\n\nNow begin responding to the user message:"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "57e40c89-f3d1-415d-91fa-11036d6a6ab6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        224,
+        208
+      ],
+      "id": "c7d58868-a740-4e55-9cac-64d45ba36aae",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "FjtwHuHK2kQugkJ5",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2a3b83f9-e9e2-45b4-b035-8f466369cee5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5af2d2d0f9e1e045bfceb8a032d31e1f44778ba58a27c4fdf45256740b955a9c"
+  },
+  "id": "uEBB77GbIeyOghNf",
+  "tags": []
+}
