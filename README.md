@@ -150,7 +150,3 @@ ClinixAI is a decision-support tool and is not intended to replace clinical judg
 * Voice-based note input
 * Custom triage pathways for ambulance services
 * Offline mode for low-connectivity regions
-
----
-
-If you'd like, I can create a **shortened README**, a **folder structure section**, or a **GitHub wiki page** version.
